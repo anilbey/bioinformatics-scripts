@@ -10,28 +10,38 @@ import numpy as np
 # from tqdm import tqdm
 from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
+import argparse
+import gzip
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-p","--path",required=True,help="fastqs path")
+parser.add_argument("-r1","--read1",required=True,help="read 1 fastq")
+parser.add_argument("-r2","--read2",required=True,help="read 2 fastq")
+parser.add_argument("-o","--output",required=True,help="output fastqs path")
+
+args = parser.parse_args()
+
 
 # define file paths
 
 # fastqs path
-fastq_path = "/cluster/work/bewi/ngs/projects/tumorProfiler/analysis/sc_dna/CCGL1ANXX_2/fastqs_pe_26_58/"
+fastq_path = args.path + '/'
 # R2 fastq file
-r2_fastq = "CCGL1ANXX_2_S1_L002_R2_001.fastq"
+r2_fastq = args.read2
 # R1 fastq file
-r1_fastq = "CCGL1ANXX_2_S1_L002_R1_001.fastq"
+r1_fastq = args.read1
 # new fastq path
-new_fastq_path = fastq_path+"tricked/unzipped/"
+new_fastq_path = args.output + '/'
 
 
-print(new_fastq_path+r1_fastq)
-with open(new_fastq_path+r1_fastq,"a") as new_r1_fastq:
+with gzip.open(new_fastq_path+r1_fastq,"wb") as new_r1_fastq:
 
-    with open(fastq_path+r1_fastq) as r1, open(fastq_path+r2_fastq) as r2: 
+    with gzip.open(fastq_path+r1_fastq, "rt") as r1, gzip.open(fastq_path+r2_fastq, "rt") as r2: 
         i = 0
         read1 = ''
         read2 = ''
         for x, y in zip(r1, r2):
-
+            
             read1 = x.strip()
             read2 = y.strip()
             #import ipdb; ipdb.set_trace() # debugging starts here
@@ -42,8 +52,8 @@ with open(new_fastq_path+r1_fastq,"a") as new_r1_fastq:
                     read1 += str(read2_seq.reverse_complement())[0:42]
                 if i%4 == 3:
                     read1 += read2[::-1][0:42]
-            new_r1_fastq.write(read1)
-            new_r1_fastq.write('\n')
+            new_r1_fastq.write(read1.encode())
+            new_r1_fastq.write('\n'.encode())
             i += 1
 
 
