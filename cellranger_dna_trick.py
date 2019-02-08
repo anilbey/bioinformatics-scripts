@@ -7,7 +7,7 @@
 
 import pandas as pd
 import numpy as np
-# from tqdm import tqdm
+from tqdm import tqdm
 from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
 import argparse
@@ -40,7 +40,7 @@ with gzip.open(new_fastq_path+r1_fastq,"wb") as new_r1_fastq:
         i = 0
         read1 = ''
         read2 = ''
-        for x, y in zip(r1, r2):
+        for x, y in tqdm(zip(r1, r2)):
             
             read1 = x.strip()
             read2 = y.strip()
